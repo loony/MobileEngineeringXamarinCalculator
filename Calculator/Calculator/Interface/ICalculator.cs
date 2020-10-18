@@ -1,29 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Calculator.Enum;
 
 namespace Calculator.Interfaces
 {
     public interface ICalculator
     {
-        void AddOperand(string operand);
+        string AddOperand(string operand);
 
-        void SetOperator(string setOperator);
+        string SetOperator(Operator setOperator);
 
         string GetResult();
 
-        void Sum();
+        string PositiveNegativeSwitcher(string givenNumber);
 
-        void Substraction();
-
-        void Multiply();
-
-        void Divide();
-
-        void PositiveNegativeSwitcher();
-
-        void Percentage();
-
-        void Clear();
+        bool IsClear();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using Calculator.Enum;
 using Calculator.Interfaces;
 using Xamarin.Forms;
 
@@ -8,11 +9,6 @@ namespace Calculator
     public partial class MainPage : ContentPage
     {
         private readonly ICalculator _calculator;
-        private bool isInputValueOneSet;
-        private decimal inputValueOne;
-        private decimal inputValueTwo;
-        private string setOperator;
-        //private Controller.Calculator calculator;
 
         public MainPage(ICalculator calculator)
         {
@@ -20,213 +16,141 @@ namespace Calculator
             InitializeComponent();
         }
 
-        public void Sum()
-        {
-            CalculatorViewField.Text = (inputValueOne + inputValueTwo).ToString(CultureInfo.InvariantCulture);
-        }
-
-        public void Substraction()
-        {
-            _calculator.Substraction();
-        }
-
-        public void Multiply()
-        {
-            CalculatorViewField.Text = (inputValueOne * inputValueTwo).ToString(CultureInfo.InvariantCulture);
-        }
-
-        public void Divide()
-        {
-            // Todo: implement logic to say division by Zero is not allowed
-            if (IsDivisionByZero(inputValueTwo))
-            {
-                WholeCalculationOutput.Text = (inputValueOne / inputValueTwo).ToString(CultureInfo.InvariantCulture);
-            }
-            else
-            {
-                CalculatorViewField.Text = "Division by zero not allowed";
-            }
-        }
-
-        public void PositiveNegativeSwitcher()
-        {
-            inputValueOne = decimal.Parse(CalculatorViewField.Text, CultureInfo.InvariantCulture);
-            setOperator = "+-";
-            Equal();
-        }
-
-        public void Percentage()
-        {
-            isInputValueOneSet = !isInputValueOneSet;
-            CalculatorViewField.Text = "%";
-        }
-
-        public void Equal()
-        {
-            isInputValueOneSet = !isInputValueOneSet;
-            inputValueTwo = decimal.Parse(CalculatorViewField.Text, CultureInfo.InvariantCulture);
-
-            switch (setOperator)
-            {
-                case "+":
-                    Sum();
-                    break;
-                case "-":
-                    Substraction();
-                    break;
-                case "*":
-                    Multiply();
-                    break;
-                case "/":
-                    Divide();
-                    break;
-                case "+-":
-                    inputValueOne = inputValueOne * -1;
-                    CalculatorViewField.Text = (inputValueOne).ToString(CultureInfo.InvariantCulture);
-                    WholeCalculationOutput.Text = (inputValueOne).ToString(CultureInfo.InvariantCulture);
-                    return;
-            }
-
-            WholeCalculationOutput.Text += inputValueTwo.ToString(CultureInfo.InvariantCulture) + " = " + CalculatorViewField.Text;
-        }
-
-        public void Clear()
-        {
-            isInputValueOneSet = false;
-            CalculatorViewField.Text = "0";
-            WholeCalculationOutput.Text = string.Empty;
-        }
-
-        private bool IsDivisionByZero(decimal givenNumber)
-        {
-            return givenNumber > 0 || givenNumber < 0 ;
-        }
-
         #region Numbers
         private void Button_Zero(object sender, EventArgs e)
         {
-            _calculator.AddOperand(CalculatorViewField.Text);
+            IsClear();
+            CalculatorViewField.Text = _calculator.AddOperand("0");
         }
 
         private void Button_One(object sender, EventArgs e)
         {
-            _calculator.AddOperand("1");
+            IsClear();
+            CalculatorViewField.Text = _calculator.AddOperand("1");
         }
 
         private void Button_Two(object sender, EventArgs e)
         {
-            _calculator.AddOperand("2");
+            IsClear();
+            CalculatorViewField.Text = _calculator.AddOperand("2");
         }
 
         private void Button_Three(object sender, EventArgs e)
         {
-            _calculator.AddOperand("3");
+            IsClear();
+            CalculatorViewField.Text = _calculator.AddOperand("3");
         }
 
         private void Button_Four(object sender, EventArgs e)
         {
-            CalculatorViewField.Text += "4";
+            IsClear();
+            CalculatorViewField.Text = _calculator.AddOperand("4");
         }
 
         private void Button_Five(object sender, EventArgs e)
         {
-            CalculatorViewField.Text += "5";
+            IsClear();
+            CalculatorViewField.Text = _calculator.AddOperand("5");
         }
 
         private void Button_Six(object sender, EventArgs e)
         {
-            CalculatorViewField.Text += "6";
+            IsClear();
+            CalculatorViewField.Text = _calculator.AddOperand("6");
         }
 
         private void Button_Seven(object sender, EventArgs e)
         {
-            CalculatorViewField.Text += "7";
+            IsClear();
+            CalculatorViewField.Text = _calculator.AddOperand("7");
         }
 
         private void Button_Eight(object sender, EventArgs e)
         {
-            CalculatorViewField.Text += "8";
+            IsClear();
+            CalculatorViewField.Text = _calculator.AddOperand("8");
         }
 
         private void Button_Nine(object sender, EventArgs e)
         {
-            CalculatorViewField.Text += "9";
+            IsClear();
+            CalculatorViewField.Text = _calculator.AddOperand("9");
         }
         #endregion
 
         #region Basic Calculation Methods
         private void Button_Plus(object sender, EventArgs e)
         {
-            isInputValueOneSet = !isInputValueOneSet;
-            inputValueOne = decimal.Parse(CalculatorViewField.Text, CultureInfo.InvariantCulture);
-            ShowOutput("+");
-            setOperator = "+";
-            CalculatorViewField.Text = "0";
+            IsClear();
+            SetOperatorAndShowValue(Operator.Plus);
         }
 
         private void Button_Minus(object sender, EventArgs e)
         {
-            isInputValueOneSet = !isInputValueOneSet;
-            inputValueOne = decimal.Parse(CalculatorViewField.Text, CultureInfo.InvariantCulture);
-            ShowOutput("-");
-            setOperator = "-";
-            CalculatorViewField.Text = "";
+            IsClear();
+            SetOperatorAndShowValue(Operator.Minus);
         }
 
         private void Button_Multiply(object sender, EventArgs e)
         {
-            isInputValueOneSet = !isInputValueOneSet;
-            inputValueOne = decimal.Parse(CalculatorViewField.Text, CultureInfo.InvariantCulture);
-            ShowOutput("*");
-            setOperator = "*";
-            CalculatorViewField.Text = "";
+            IsClear();
+            SetOperatorAndShowValue(Operator.Multiply);
+        }
+
+        private void Button_Div(object sender, EventArgs e)
+        {
+            IsClear();
+            SetOperatorAndShowValue(Operator.Divide);
         }
 
         private void Button_Percent(object sender, EventArgs e)
         {
-            isInputValueOneSet = !isInputValueOneSet;
-            CalculatorViewField.Text = "%";
+            IsClear();
+            SetOperatorAndShowValue(Operator.Percentage);
         }
         #endregion
 
         #region diverse methods
         private void Button_Equal(object sender, EventArgs e)
         {
+            IsClear();
+            WholeCalculationOutput.Text += CalculatorViewField.Text + "=";
             CalculatorViewField.Text = _calculator.GetResult();
+            WholeCalculationOutput.Text += CalculatorViewField.Text;
         }
 
         private void Button_Point(object sender, EventArgs e)
         {
-            CalculatorViewField.Text += ".";
-        }
-
-        private void Button_Div(object sender, EventArgs e)
-        {
-            isInputValueOneSet = !isInputValueOneSet;
-            inputValueOne = decimal.Parse(CalculatorViewField.Text, CultureInfo.InvariantCulture);
-            ShowOutput("/");
-            setOperator = "/";
-            CalculatorViewField.Text = "";
+            IsClear();
+            CalculatorViewField.Text = _calculator.AddOperand(".");
         }
 
         private void Button_Clear(object sender, EventArgs e)
         {
-            isInputValueOneSet = false;
-            WholeCalculationOutput.Text = string.Empty;
-            Clear();
+            CalculatorViewField.Text = _calculator.SetOperator(Operator.Clear);
+            WholeCalculationOutput.Text = CalculatorViewField.Text;
         }
 
         private void Button_PositiveNegativeSwitcher(object sender, EventArgs e)
         {
-            PositiveNegativeSwitcher();
+            IsClear();
+            CalculatorViewField.Text = _calculator.PositiveNegativeSwitcher(CalculatorViewField.Text);
         }
         #endregion
 
-        private void ShowOutput(string calculatorOperator)
+        private void SetOperatorAndShowValue(Operator givenOperator)
         {
-            WholeCalculationOutput.Text += CalculatorViewField.Text + " " + calculatorOperator;
+            WholeCalculationOutput.Text += _calculator.SetOperator(givenOperator);
+            CalculatorViewField.Text = string.Empty;
+        }
 
-            CalculatorViewField.Text = calculatorOperator;
+        private void IsClear()
+        {
+            if (_calculator.IsClear())
+            {
+                WholeCalculationOutput.Text = string.Empty;
+                CalculatorViewField.Text = string.Empty;
+            }
         }
     }
 }

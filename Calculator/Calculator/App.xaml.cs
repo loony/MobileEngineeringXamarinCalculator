@@ -7,14 +7,12 @@ namespace Calculator
 {
     public partial class App : Application
     {
-        private ICalculator calculator;
 
-        public App(ICalculator calculator)
+        public App()
         {
-            this.calculator = calculator;
             InitializeComponent();
 
-            MainPage = new MainPage(calculator);
+            MainPage = new MainPage(new Controller.Calculator());
         }
 
         protected override void OnStart()

@@ -13,14 +13,8 @@ namespace Calculator.Droid
     [Activity(Label = "Calculator", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
-        private readonly ICalculator _calculator;
 
         public MainActivity() {}
-
-        public MainActivity(ICalculator calculator)
-        {
-            this._calculator = calculator;
-        }
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -31,7 +25,7 @@ namespace Calculator.Droid
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-            LoadApplication(new App(_calculator));
+            LoadApplication(new App());
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {

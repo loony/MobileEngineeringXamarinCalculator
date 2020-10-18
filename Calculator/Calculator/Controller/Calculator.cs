@@ -1,96 +1,180 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
+﻿using Calculator.Enum;
 using Calculator.Interfaces;
+using CultureInfo = System.Globalization.CultureInfo;
 
 namespace Calculator.Controller
 {
     public class Calculator : ICalculator
     {
+        private readonly Validation.Validation _validation;
         private bool isFirstValueSet;
-        private decimal numberOne;
-        private decimal numberTwo;
+        private string numberOne;
+        private string numberTwo;
         private string calcOperator;
+        private bool isGuiToBeCleared;
 
-        public void AddOperand(string givenNumber)
+        public Calculator()
+        {
+            _validation = new Validation.Validation();
+        }
+
+        #region public methods
+        public string AddOperand(string givenNumber)
         {
             if (isFirstValueSet)
             {
-                numberOne = decimal.Parse(givenNumber, CultureInfo.InvariantCulture);
+                numberTwo = numberTwo + givenNumber;
             }
             else
             {
-                numberTwo = decimal.Parse(givenNumber, CultureInfo.InvariantCulture);
+                numberOne = numberOne + givenNumber;
             }
+
+            return isFirstValueSet
+                ? numberTwo
+                : numberOne;
         }
 
-        public void SetOperator(string setOperator)
+        public string SetOperator(Operator setOperator)
         {
-            calcOperator = setOperator;
-            isFirstValueSet = !isFirstValueSet;
+            return SetCalculationOperator(setOperator);
         }
 
         public string GetResult()
         {
-            switch (calcOperator)
+            isGuiToBeCleared = true;
+            var one = decimal.Parse(numberOne);
+            var two = decimal.Parse(numberTwo);
+            var isValid = _validation.Validator(Operator.Plus, isFirstValueSet,
+                two.ToString(CultureInfo.InvariantCulture));
+
+            if (isValid)
             {
-                case "+":
-                    Sum();
-                    break;
-                case "-":
-                    Substraction();
-                    break;
-                case "*":
-                    Multiply();
-                    break;
-                case "/":
-                    Divide();
-                    break;
-                case "+-":
-                    numberOne = numberOne * -1;
-                    //CalculatorViewField.Text = (inputValueOne).ToString(CultureInfo.InvariantCulture);
-                    //WholeCalculationOutput.Text = (inputValueOne).ToString(CultureInfo.InvariantCulture);
-                    //return;
-                    break;
+                switch (calcOperator)
+                {
+                    case "+":
+                        return Sum(one, two);
+                    case "-":
+                        return Substraction(one, two);
+                    case "*":
+                        return Multiply(one, two);
+                    case ":":
+                        return Divide(one, two);
+                }
             }
 
-            return "";
+            return "There was a validation error. Press C to start over.";
         }
 
-        public void Sum()
+        public string PositiveNegativeSwitcher(string givenNumber)
         {
-            throw new NotImplementedException();
+            var number = decimal.Parse(givenNumber, CultureInfo.InvariantCulture);
+
+            return PositiveNegativeSwitcher(number);
         }
 
-        public void Substraction()
+        public bool IsClear()
         {
-            throw new NotImplementedException();
+            if (isGuiToBeCleared)
+            {
+                Clear();
+                return true;
+            }
+
+            return false;
         }
 
-        public void Multiply()
+        #endregion
+
+        #region operators
+        private string Sum(decimal one, decimal two)
         {
-            throw new NotImplementedException();
+            return (one + two).ToString(CultureInfo.InvariantCulture);
         }
 
-        public void Divide()
+        private string Substraction(decimal one, decimal two)
         {
-            throw new NotImplementedException();
+            return (one - two).ToString(CultureInfo.InvariantCulture);
         }
 
-        public void PositiveNegativeSwitcher()
+        private string Multiply(decimal one, decimal two)
         {
-            throw new NotImplementedException();
+            return (one * two).ToString(CultureInfo.InvariantCulture);
         }
 
-        public void Percentage()
+        private string Divide(decimal one, decimal two)
         {
-            throw new NotImplementedException();
+            return (one / two).ToString(CultureInfo.InvariantCulture);
         }
 
-        public void Clear()
+        private string Percentage(double givenNumber)
         {
-            throw new NotImplementedException();
+            var number = (givenNumber * 0.01).ToString(CultureInfo.InvariantCulture);
+
+            if (isFirstValueSet)
+            {
+                numberTwo = number;
+            }
+            else
+            {
+                numberOne = number;
+            }
+
+            return number;
+        }
+        #endregion
+
+        private string PositiveNegativeSwitcher(decimal givenNumber)
+        {
+            var number = (givenNumber * -1).ToString(CultureInfo.InvariantCulture);
+            if (isFirstValueSet)
+            {
+                numberTwo = number;
+            }
+            else
+            {
+                numberOne = number;
+            }
+
+            return number;
+        }
+
+        private string Clear()
+        {
+            isFirstValueSet = false;
+            numberOne = string.Empty;
+            numberTwo = string.Empty;
+            calcOperator = string.Empty;
+            isGuiToBeCleared = false;
+            return string.Empty;
+        }
+
+        private string SetCalculationOperator(Operator setOperator)
+        {
+
+            switch (setOperator)
+            {
+                case Operator.Plus:
+                    calcOperator = "+";
+                    break;
+                case Operator.Minus:
+                    calcOperator = "-";
+                    break;
+                case Operator.Multiply:
+                    calcOperator = "*";
+                    break;
+                case Operator.Divide:
+                    calcOperator = ":";
+                    break;
+                case Operator.Percentage:
+                    return Percentage(double.Parse(numberOne));
+                case Operator.Clear:
+                    return Clear();
+            }
+
+            isFirstValueSet = !isFirstValueSet;
+
+            return (numberOne).ToString(CultureInfo.InvariantCulture) + calcOperator;
         }
     }
 }
